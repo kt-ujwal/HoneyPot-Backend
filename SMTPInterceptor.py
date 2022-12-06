@@ -13,29 +13,34 @@ class OrgFakeSMTPServer(SMTPServer):
     no = 0
 
     def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
-        banned_email_list = list(itertools.chain(*r.banned_emails()))
-        if mailfrom not in banned_email_list:
-            hp.process_honey_tokens(mailfrom, rcpttos, data)
+        try:
             banned_email_list = list(itertools.chain(*r.banned_emails()))
             if mailfrom not in banned_email_list:
-                self.sendto_realserver(peer, mailfrom, rcpttos, data)
+                hp.process_honey_tokens(mailfrom, rcpttos, data)
+                banned_email_list = list(itertools.chain(*r.banned_emails()))
+                if mailfrom not in banned_email_list:
+                    self.sendto_realserver(peer, mailfrom, rcpttos, data)
+                else:
+                    pass
+
             else:
                 hp.process_email(mailfrom, rcpttos, data)
-
-        else:
-            #hp.process_email(mailfrom, rcpttos, data)
-            print("Recieved Email from blocked email sender...")
+                print("Recieved Email from blocked email sender discarding email...")
+        except Exception as e:
+            print(e.message)
 
     def sendto_realserver(self, peer, mailfrom, rcpttos, data):
-        with smtplib.SMTP(host='localhost', port=2025) as real_smtp:
-            real_smtp.sendmail(mailfrom, rcpttos, data)
-            org_smtp.run()
-        #org_smtp.send_mail_to_org(peer, mailfrom, rcpttos, data)
+        # with smtplib.SMTP(host='localhost', port=587) as real_smtp:
+        #     real_smtp.sendmail(mailfrom, rcpttos, data)
+        #     org_smtp.run()
+        org_smtp.send_mail_to_org(peer, mailfrom, rcpttos, data)
 
 
 def run():
-    server = OrgFakeSMTPServer(('localhost', 1025), None)
+    #server = OrgFakeSMTPServer(('localhost', 2525), None)
+    server = OrgFakeSMTPServer(('172.31.89.108', 2525), None)
     try:
+        print("Listening on port 2525...")
         asyncore.loop()
     except KeyboardInterrupt:
         pass

@@ -10,8 +10,8 @@ def process_honey_tokens(mailfrom, rcpttos, data, honeytoken_tuple=r.get_honey_t
     for rcpto in rcpttos:
         if rcpto in honey_token_list:
             print("Email Recieved to honey token email")
-            subject = str(data).split("Subject:")[1].split("Content-Type")[0]
-            body = str(data).split(":")[-1]
+            subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'","")
+            body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'","")
             r.insert_blocked_email_contents(mailfrom, subject, body, rcpto)
             meta_data_reciever(data)
             r.insert_banned_email(mailfrom)
@@ -23,8 +23,8 @@ def process_email(mailfrom, rcpttos, data, honeytoken_tuple=r.get_honey_tokens()
     honey_token_list = list(itertools.chain(*honeytoken_tuple))
     for rcpto in rcpttos:
         if rcpto in honey_token_list:
-            subject = str(data).split("Subject:")[1].split("Content-Type")[0]
-            body = str(data).split(":")[-1]
+            subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'","")
+            body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'","")
             r.insert_blocked_email_contents(mailfrom, subject, body, rcpto)
             meta_data_reciever(data)
             print("Captured email contents from blocked sender")
@@ -38,4 +38,4 @@ def meta_data_reciever(data):
     f = open(f"MetaData/{filename}", 'wb')
     f.write(data)
     f.close
-    print('%s saved.' % filename)
+    print('%s captured for analysis.' % filename)

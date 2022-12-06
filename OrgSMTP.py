@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 import asyncore
 from smtpd import SMTPServer
+import OrgSQLRepository as r
 
 class OrgSMTPServer(SMTPServer):
     no = 0
@@ -29,5 +30,10 @@ def send_mail_to_org(peer, mailfrom, rcpttos, data):
     filename = '%s-%s.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'), emailuuid)
     f = open(f"Org/{filename}", 'wb')
     f.write(data)
-    f.close
-    print('%s saved.' % filename)
+    f.close()
+    print('%s saved for spam analysis.' % filename)
+    for rcpto in rcpttos:
+        subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'","")
+        body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'","")
+        r.insert_org_email(mailfrom, subject, body, rcpto)
+        print(f"Email delivered to {rcpto}")

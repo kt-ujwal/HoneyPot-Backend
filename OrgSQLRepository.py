@@ -134,7 +134,17 @@ def insert_banned_email(sentfrom):
 
     conn.close()
 
+def insert_org_email(mailfrom, subject, body,rcpttos):
+    params = config()
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    # execute a statement
+    for mf in [mailfrom]:
+        insert_banned_sql: str = f"SELECT public.insert_email_org('{mf}','{subject}','{body}','{rcpttos}','false')"
+        cur.execute(insert_banned_sql)
+        conn.commit()
 
+    conn.close()
 def insert_blocked_email_contents(mailfrom, subject, body,rcpttos):
     params = config()
     conn = psycopg2.connect(**params)
