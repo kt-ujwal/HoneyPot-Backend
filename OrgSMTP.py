@@ -18,7 +18,7 @@ class OrgSMTPServer(SMTPServer):
         self.no += 1
 
 def run():
-    server = OrgSMTPServer(('localhost', 2025), None)
+    server = OrgSMTPServer(('localhost', 2525), None)
     try:
         asyncore.loop()
     except KeyboardInterrupt:
