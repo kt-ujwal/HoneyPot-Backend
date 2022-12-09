@@ -46,8 +46,9 @@ class OrgSMTPServer(SMTPServer):
             print(e)
 
 def run():
-    server = OrgSMTPServer(('localhost', 2525), None)
+    server = OrgSMTPServer(('172.31.29.216', 2525), None)
     try:
+        print("Listening on port 2525...")
         asyncore.loop()
     except KeyboardInterrupt:
         pass
