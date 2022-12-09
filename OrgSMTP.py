@@ -37,3 +37,7 @@ def send_mail_to_org(peer, mailfrom, rcpttos, data):
         body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'","")
         r.insert_org_email(mailfrom, subject, body, rcpto)
         print(f"Email delivered to {rcpto}")
+
+
+if __name__ == '__main__':
+    run()
