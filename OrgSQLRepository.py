@@ -130,6 +130,39 @@ def is_spam_email(mail_from,rcptos,data):
             conn.close()
             #print('Database connection closed.')
 
+def org_emails(sql: str ='SELECT * FROM public.org_email;'):
+    """ Connect to the PostgreSQL database server """
+    conn = None
+    try:
+        # read connection parameters
+        params = config()
+
+        # connect to the PostgreSQL server
+        #print('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        # print('Data in Users table:\n')
+        cur.execute(sql)
+        # conn.commit()
+
+        # display the PostgreSQL database server version
+        data = cur.fetchall()
+        #print(data)
+
+        # close the communication with the PostgreSQL
+        cur.close()
+        return data
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            #print('Database connection closed.')
+
 def blocked_emails(sql: str ='SELECT * FROM public.email_blocker;'):
     """ Connect to the PostgreSQL database server """
     conn = None
