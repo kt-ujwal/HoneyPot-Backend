@@ -9,7 +9,7 @@ import smtplib
 import OrgSMTP as org_smtp
 
 
-class OrgFakeSMTPServer(SMTPServer):
+class OrgHoneySMTPServer(SMTPServer):
     no = 0
 
     def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
@@ -27,18 +27,18 @@ class OrgFakeSMTPServer(SMTPServer):
                 hp.process_email(mailfrom, rcpttos, data)
                 print("Recieved Email from blocked email sender discarding email...")
         except Exception as e:
-            print(e.message)
+            print(e)
 
     def sendto_realserver(self, peer, mailfrom, rcpttos, data):
-        # with smtplib.SMTP(host='localhost', port=587) as real_smtp:
-        #      real_smtp.sendmail(mailfrom, rcpttos, data)
-        #      org_smtp.run()
         org_smtp.send_mail_to_org(peer, mailfrom, rcpttos, data)
+        with smtplib.SMTP(host='ec2-34-200-79-166.compute-1.amazonaws.com', port=2525) as real_smtp:
+        #with smtplib.SMTP(host='localhost', port=587) as real_smtp:
+             real_smtp.sendmail(mailfrom, rcpttos, data)
 
 
 def run():
-    #server = OrgFakeSMTPServer(('localhost', 2525), None)
-    server = OrgFakeSMTPServer(('172.31.89.108', 2525), None)
+    #server = OrgHoneySMTPServer(('localhost', 2525), None)
+    server = OrgHoneySMTPServer(('172.31.89.108', 2525), None)
     try:
         print("Listening on port 2525...")
         asyncore.loop()

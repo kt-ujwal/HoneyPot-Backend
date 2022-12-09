@@ -1,3 +1,4 @@
+import os
 import uuid
 from datetime import datetime
 
@@ -34,8 +35,11 @@ def process_email(mailfrom, rcpttos, data, honeytoken_tuple=r.get_honey_tokens()
 
 def meta_data_reciever(data):
     emailuuid = uuid.uuid4()
+    metadata = f'Blocked'
+    if not os.path.exists(metadata):
+        os.makedirs(metadata)
     filename = '%s-%s.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),emailuuid)
-    f = open(f"MetaData/{filename}", 'wb')
+    f = open(f"{metadata}/{filename}", 'wb')
     f.write(data)
     f.close
     print('%s captured for analysis.' % filename)

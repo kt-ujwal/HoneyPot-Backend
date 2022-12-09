@@ -1,3 +1,5 @@
+import itertools
+
 import pandas as pd
 import psycopg2
 from configparser import ConfigParser
@@ -47,6 +49,80 @@ def get_honey_tokens(sql: str ='SELECT honey_token_email FROM public.\"Honeytoke
         # close the communication with the PostgreSQL
         cur.close()
         return data
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            #print('Database connection closed.')
+
+def get_org_email_dir(sql: str ='SELECT email_id FROM public.\"Employees\";'):
+    """ Connect to the PostgreSQL database server """
+    conn = None
+    try:
+        # read connection parameters
+        params = config()
+
+        # connect to the PostgreSQL server
+        #print('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(**params)
+
+        # create a cursor
+        cur = conn.cursor()
+
+        # execute a statement
+        # print('Data in Users table:\n')
+        cur.execute(sql)
+        # conn.commit()
+
+        # display the PostgreSQL database server version
+        data = cur.fetchall()
+        #print(data)
+
+        # close the communication with the PostgreSQL
+        cur.close()
+        return data
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
+            #print('Database connection closed.')
+
+def is_spam_email(mail_from,rcptos,data):
+    """ Connect to the PostgreSQL database server """
+    try:
+        subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'", "")
+        body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'", "")
+        is_spam = []
+        for rcp in rcptos:
+            sql:str =f"SELECT is_spam FROM public.org_email where from_email='{mail_from}' and email_subject='{subject}' and email_body='{body}' and email_to='{rcp}';"
+            conn = None
+
+            # read connection parameters
+            params = config()
+
+            # connect to the PostgreSQL server
+            #print('Connecting to the PostgreSQL database...')
+            conn = psycopg2.connect(**params)
+
+            # create a cursor
+            cur = conn.cursor()
+
+            # execute a statement
+            # print('Data in Users table:\n')
+            cur.execute(sql)
+            # conn.commit()
+
+            # display the PostgreSQL database server version
+            data = cur.fetchall()
+            #print(data)
+            for dat in data:
+                if not dat[0]:
+                    is_spam.append(dat)
+            # close the communication with the PostgreSQL
+        cur.close()
+        return is_spam
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
     finally:
