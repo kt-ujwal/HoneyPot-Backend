@@ -26,21 +26,21 @@ class OrgSMTPServer(SMTPServer):
 
                     filename = '%s-%d.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),
                                               self.no)
-
+                    print(f"Sening Email to {inbox}")
                     f = open(f"{inbox}/{filename}", 'wb')
                     f.write(data)
                     f.close
-                    print('%s saved.' % filename)
+                    #print('%s saved.' % filename)
                     self.no += 1
                     break
             else:
                 filename = '%s-%d.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),
                                           self.no)
-
+                print(f"Sening Email to {spam}")
                 f = open(f"{spam}/{filename}", 'wb')
                 f.write(data)
                 f.close
-                print('%s saved.' % filename)
+                #print('%s saved.' % filename)
                 self.no += 1
         except Exception as e:
             print(e)
