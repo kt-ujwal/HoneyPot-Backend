@@ -38,8 +38,9 @@ class OrgHoneySMTPServer(SMTPServer):
                 r.insert_spam_emails(mailfrom,subject,body,rcpt)
 
         with smtplib.SMTP(host='ec2-54-173-9-46.compute-1.amazonaws.com', port=2525) as real_smtp:
-        #with smtplib.SMTP(host='localhost', port=587) as real_smtp:
-             real_smtp.sendmail(mailfrom, rcpttos, data)
+            #org_smtp.check_process_message(mailfrom, rcpttos, data)
+            #with smtplib.SMTP(host='localhost', port=587) as real_smtp:
+            real_smtp.sendmail(mailfrom, rcpttos, data)
 
 
 def run():
