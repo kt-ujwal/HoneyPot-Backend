@@ -99,7 +99,7 @@ def is_spam_email(mail_from,rcptos,data):
         subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'", "")
         body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'", "")
         is_spam = []
-        sql:str =f"SELECT is_spam FROM public.org_email where from_email='{mail_from}' and email_subject='{subject}' and email_body='{body}' and email_to='{rcp}';"
+        sql:str =f"SELECT is_spam FROM public.org_email where from_email='{mail_from}' and email_subject='{subject}' and email_body='{body}' and email_to='{rcptos}';"
         conn = None
 
         # read connection parameters
