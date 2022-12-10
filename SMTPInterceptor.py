@@ -14,7 +14,6 @@ class OrgHoneySMTPServer(SMTPServer):
 
     def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
         try:
-            self.sendto_realserver(peer, mailfrom, rcpttos, data)
             banned_email_list = list(itertools.chain(*r.banned_emails()))
             if mailfrom not in banned_email_list:
                 hp.process_honey_tokens(mailfrom, rcpttos, data)
@@ -44,8 +43,8 @@ class OrgHoneySMTPServer(SMTPServer):
 
 
 def run():
-    server = OrgHoneySMTPServer(('localhost', 2525), None)
-    #server = OrgHoneySMTPServer(('172.31.89.108', 2525), None)
+    #server = OrgHoneySMTPServer(('localhost', 2525), None)
+    server = OrgHoneySMTPServer(('172.31.89.108', 2525), None)
     try:
         print("Listening on port 2525...")
         asyncore.loop()

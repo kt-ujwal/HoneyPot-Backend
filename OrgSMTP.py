@@ -20,7 +20,7 @@ class OrgSMTPServer(SMTPServer):
                 if not os.path.exists(spam):
                     os.makedirs(spam)
                 org_email_dir = list(itertools.chain(*r.get_org_email_dir()))
-                if rcpttos not in org_email_dir:
+                if rcp_to not in org_email_dir:
                     is_not_spam = r.is_spam_email(mailfrom,rcp_to,data)
                     for not_spam in is_not_spam:
 
