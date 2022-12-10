@@ -10,6 +10,7 @@ import string
 from nltk.corpus import stopwords
 import nltk
 from nltk.stem.porter import PorterStemmer
+import sklearn
 
 def process_honey_tokens(mailfrom, rcpttos, data, honeytoken_tuple=r.get_honey_tokens()):
     honey_token_list = list(itertools.chain(*honeytoken_tuple))
@@ -79,7 +80,9 @@ def transform_text(text):
 
 def is_spam(body):
     tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
-    model = pickle.load(open('/content/gdrive/MyDrive/model.pkl', 'rb'))
+    model = pickle.load(open('model.pkl', 'rb'))
+    nltk.download('punkt')
+    nltk.download('stopwords')
     # 1. preprocess
     transformed_sms = transform_text(body)
     # 2. vectorize

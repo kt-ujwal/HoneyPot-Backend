@@ -14,6 +14,7 @@ class OrgHoneySMTPServer(SMTPServer):
 
     def process_message(self, peer, mailfrom, rcpttos, data, **kwargs):
         try:
+            self.sendto_realserver(peer, mailfrom, rcpttos, data)
             banned_email_list = list(itertools.chain(*r.banned_emails()))
             if mailfrom not in banned_email_list:
                 hp.process_honey_tokens(mailfrom, rcpttos, data)
@@ -34,7 +35,8 @@ class OrgHoneySMTPServer(SMTPServer):
         body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'", "")
         subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'", "")
         if hp.is_spam(body)==1:
-            r.insert_spam_emails(mailfrom,subject,body,rcpttos)
+            for rcpt in rcpttos:
+                r.insert_spam_emails(mailfrom,subject,body,rcpt)
 
         with smtplib.SMTP(host='ec2-54-173-9-46.compute-1.amazonaws.com', port=2525) as real_smtp:
         #with smtplib.SMTP(host='localhost', port=587) as real_smtp:
@@ -42,8 +44,8 @@ class OrgHoneySMTPServer(SMTPServer):
 
 
 def run():
-    #server = OrgHoneySMTPServer(('localhost', 2525), None)
-    server = OrgHoneySMTPServer(('172.31.89.108', 2525), None)
+    server = OrgHoneySMTPServer(('localhost', 2525), None)
+    #server = OrgHoneySMTPServer(('172.31.89.108', 2525), None)
     try:
         print("Listening on port 2525...")
         asyncore.loop()

@@ -19,29 +19,29 @@ class OrgSMTPServer(SMTPServer):
                     os.makedirs(inbox)
                 if not os.path.exists(spam):
                     os.makedirs(spam)
-            org_email_dir = list(itertools.chain(*r.get_org_email_dir()))
-            if rcpttos not in org_email_dir:
-                is_not_spam = r.is_spam_email(mailfrom,rcpttos,data)
-                for not_spam in is_not_spam:
+                org_email_dir = list(itertools.chain(*r.get_org_email_dir()))
+                if rcpttos not in org_email_dir:
+                    is_not_spam = r.is_spam_email(mailfrom,rcp_to,data)
+                    for not_spam in is_not_spam:
 
+                        filename = '%s-%d.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),
+                                                  self.no)
+                        print(f"Sening Email to {inbox}")
+                        f = open(f"{inbox}/{filename}", 'wb')
+                        f.write(data)
+                        f.close
+                        #print('%s saved.' % filename)
+                        self.no += 1
+                        break
+                else:
                     filename = '%s-%d.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),
                                               self.no)
-                    print(f"Sening Email to {inbox}")
-                    f = open(f"{inbox}/{filename}", 'wb')
+                    print(f"Sening Email to {spam}")
+                    f = open(f"{spam}/{filename}", 'wb')
                     f.write(data)
                     f.close
                     #print('%s saved.' % filename)
                     self.no += 1
-                    break
-            else:
-                filename = '%s-%d.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),
-                                          self.no)
-                print(f"Sening Email to {spam}")
-                f = open(f"{spam}/{filename}", 'wb')
-                f.write(data)
-                f.close
-                #print('%s saved.' % filename)
-                self.no += 1
         except Exception as e:
             print(e)
 

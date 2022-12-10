@@ -10,7 +10,6 @@ from configparser import ConfigParser
 import json
 import uuid
 import get_secret_postgres as sm
-import HoneyPotProcessor as H
 
 def config(filename: str = 'database.ini', section: str = 'awspostgresql'):
     parser = ConfigParser()
@@ -100,32 +99,31 @@ def is_spam_email(mail_from,rcptos,data):
         subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'", "")
         body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'", "")
         is_spam = []
-        for rcp in rcptos:
-            sql:str =f"SELECT is_spam FROM public.org_email where from_email='{mail_from}' and email_subject='{subject}' and email_body='{body}' and email_to='{rcp}';"
-            conn = None
+        sql:str =f"SELECT is_spam FROM public.org_email where from_email='{mail_from}' and email_subject='{subject}' and email_body='{body}' and email_to='{rcp}';"
+        conn = None
 
-            # read connection parameters
-            params = config()
+        # read connection parameters
+        params = config()
 
-            # connect to the PostgreSQL server
-            #print('Connecting to the PostgreSQL database...')
-            conn = psycopg2.connect(**params)
+        # connect to the PostgreSQL server
+        #print('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(**params)
 
-            # create a cursor
-            cur = conn.cursor()
+        # create a cursor
+        cur = conn.cursor()
 
-            # execute a statement
-            # print('Data in Users table:\n')
-            cur.execute(sql)
-            # conn.commit()
+        # execute a statement
+        # print('Data in Users table:\n')
+        cur.execute(sql)
+        # conn.commit()
 
-            # display the PostgreSQL database server version
-            data = cur.fetchall()
-            #print(data)
-            for dat in data:
-                if not dat[0]:
-                    is_spam.append(dat)
-            # close the communication with the PostgreSQL
+        # display the PostgreSQL database server version
+        data = cur.fetchall()
+        #print(data)
+        for dat in data:
+            if not dat[0]:
+                is_spam.append(dat)
+        # close the communication with the PostgreSQL
         cur.close()
         return is_spam
     except (Exception, psycopg2.DatabaseError) as error:
@@ -279,7 +277,7 @@ def insert_spam_emails(mailfrom, subject, body,rcpttos):
     params = config()
     conn = psycopg2.connect(**params)
     cur = conn.cursor()
-    insert_banned_sql: str = f"SELECT public.update_spam_emails('{mailfrom}','{subject}','{body}','{rcpttos}')"
+    insert_banned_sql: str = f"SELECT public.update_spam_emails('{mailfrom}','{subject}','{body}','{rcpttos}',true)"
     cur.execute(insert_banned_sql)
     conn.commit()
     conn.close()
