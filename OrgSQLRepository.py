@@ -130,7 +130,7 @@ def is_spam_email(mail_from,rcptos,data):
             conn.close()
             #print('Database connection closed.')
 
-def org_emails(sql: str ='SELECT * FROM public.org_email;'):
+def org_emails(sql: str ='SELECT * FROM public.org_email where is_spam=true;'):
     """ Connect to the PostgreSQL database server """
     conn = None
     try:
