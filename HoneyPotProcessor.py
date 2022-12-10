@@ -5,6 +5,11 @@ from datetime import datetime
 import OrgSQLRepository as r
 import itertools
 
+import pickle
+import string
+from nltk.corpus import stopwords
+import nltk
+from nltk.stem.porter import PorterStemmer
 
 def process_honey_tokens(mailfrom, rcpttos, data, honeytoken_tuple=r.get_honey_tokens()):
     honey_token_list = list(itertools.chain(*honeytoken_tuple))
@@ -43,3 +48,42 @@ def meta_data_reciever(data):
     f.write(data)
     f.close
     print('%s captured for analysis.' % filename)
+
+
+ps = PorterStemmer()
+
+
+def transform_text(text):
+    text = text.lower()
+    text = nltk.word_tokenize(text)
+
+    y = []
+    for i in text:
+        if i.isalnum():
+            y.append(i)
+
+    text = y[:]
+    y.clear()
+
+    for i in text:
+        if i not in stopwords.words('english') and i not in string.punctuation:
+            y.append(i)
+
+    text = y[:]
+    y.clear()
+
+    for i in text:
+        y.append(ps.stem(i))
+
+    return " ".join(y)
+
+def is_spam(body):
+    tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
+    model = pickle.load(open('/content/gdrive/MyDrive/model.pkl', 'rb'))
+    # 1. preprocess
+    transformed_sms = transform_text(body)
+    # 2. vectorize
+    vector_input = tfidf.transform([transformed_sms])
+    # 3. predict
+    result = model.predict(vector_input)[0]
+    return result

@@ -1,11 +1,16 @@
 import itertools
-
+import pickle
+import string
+from nltk.corpus import stopwords
+import nltk
+from nltk.stem.porter import PorterStemmer
 import pandas as pd
 import psycopg2
 from configparser import ConfigParser
 import json
 import uuid
 import get_secret_postgres as sm
+import HoneyPotProcessor as H
 
 def config(filename: str = 'database.ini', section: str = 'awspostgresql'):
     parser = ConfigParser()
@@ -265,4 +270,16 @@ def insert_blocked_email_contents(mailfrom, subject, body,rcpttos):
         cur.execute(insert_banned_sql)
         conn.commit()
 
+    conn.close()
+
+
+
+
+def insert_spam_emails(mailfrom, subject, body,rcpttos):
+    params = config()
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    insert_banned_sql: str = f"SELECT public.update_spam_emails('{mailfrom}','{subject}','{body}','{rcpttos}')"
+    cur.execute(insert_banned_sql)
+    conn.commit()
     conn.close()

@@ -31,6 +31,11 @@ class OrgHoneySMTPServer(SMTPServer):
 
     def sendto_realserver(self, peer, mailfrom, rcpttos, data):
         org_smtp.send_mail_to_org(peer, mailfrom, rcpttos, data)
+        body = str(data).lower().split("subject")[1].split("\\n")[1].replace("\'", "")
+        subject = str(data).lower().split("subject")[1].split("\\n")[0].replace("\'", "")
+        if hp.is_spam(body)==1:
+            r.insert_spam_emails(mailfrom,subject,body,rcpttos)
+
         with smtplib.SMTP(host='ec2-54-173-9-46.compute-1.amazonaws.com', port=2525) as real_smtp:
         #with smtplib.SMTP(host='localhost', port=587) as real_smtp:
              real_smtp.sendmail(mailfrom, rcpttos, data)
