@@ -121,7 +121,7 @@ def is_spam_email(mail_from,rcptos,data):
         data = cur.fetchall()
         #print(data)
         for dat in data:
-            if not dat[0]:
+            if dat[0]:
                 is_spam.append(dat)
         # close the communication with the PostgreSQL
         cur.close()

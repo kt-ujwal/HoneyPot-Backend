@@ -54,7 +54,7 @@ def meta_data_reciever(data):
 ps = PorterStemmer()
 
 
-def transform_text(text):
+def preprocessed_data(text):
     text = text.lower()
     text = nltk.word_tokenize(text)
 
@@ -79,14 +79,14 @@ def transform_text(text):
     return " ".join(y)
 
 def is_spam(body):
-    tfidf = pickle.load(open('vectorizer.pkl', 'rb'))
+    transform = pickle.load(open('vectorizer.pkl', 'rb'))
     model = pickle.load(open('model.pkl', 'rb'))
-    nltk.download('punkt')
-    nltk.download('stopwords')
+    #nltk.download('punkt')
+    #nltk.download('stopwords')
     # 1. preprocess
-    transformed_sms = transform_text(body)
+    processed_text = preprocessed_data(body)
     # 2. vectorize
-    vector_input = tfidf.transform([transformed_sms])
+    input = transform.transform([processed_text])
     # 3. predict
-    result = model.predict(vector_input)[0]
+    result = model.predict(input)[0]
     return result

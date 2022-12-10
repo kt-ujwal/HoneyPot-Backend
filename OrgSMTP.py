@@ -21,21 +21,26 @@ class OrgSMTPServer(SMTPServer):
                     os.makedirs(spam)
                 org_email_dir = list(itertools.chain(*r.get_org_email_dir()))
                 if rcp_to in org_email_dir:
-                    is_not_spam = r.is_spam_email(mailfrom, rcp_to, data)
-                    for not_spam in is_not_spam:
-                        if not_spam:
-                            filename = '%s.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'))
-                            print(f"Sening Email to {spam}")
+                    is_spam = r.is_spam_email(mailfrom,rcp_to,data)
+                    if is_spam==[]:
+                        filename = '%s-%d.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),self.no)
+                        print(f"Sending Email to {inbox}")
+                        f = open(f"{inbox}/{filename}", 'wb')
+                        f.write(data)
+                        f.close
+                        #print('%s saved.' % filename)
+                        self.no += 1
+                    for found_spam in is_spam:
+                        if found_spam:
+                            filename = '%s-%d.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'),self.no)
+                            print(f"Sending Email to {spam}")
                             f = open(f"{spam}/{filename}", 'wb')
                             f.write(data)
                             f.close
+                            #print('%s saved.' % filename)
+                            self.no += 1
                             break
 
-                    filename = '%s.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'))
-                    print(f"Sending Email to {inbox}")
-                    f = open(f"{inbox}/{filename}", 'wb')
-                    f.write(data)
-                    f.close
         except Exception as e:
             print(e)
 
@@ -75,21 +80,24 @@ def check_process_message(mailfrom, rcpttos, data, **kwargs):
             org_email_dir = list(itertools.chain(*r.get_org_email_dir()))
             if rcp_to in org_email_dir:
                 is_not_spam = r.is_spam_email(mailfrom,rcp_to,data)
+                if is_not_spam == []:
+                    filename = '%s.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'))
+                    print(f"Sending Email to {inbox}")
+                    f = open(f"{inbox}/{filename}", 'wb')
+                    f.write(data)
+                    f.close
+
                 for not_spam in is_not_spam:
                     if not_spam:
                         filename = '%s.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'))
-                        print(f"Sening Email to {spam}")
+                        print(f"Sending Email to {spam}")
                         f = open(f"{spam}/{filename}", 'wb')
                         f.write(data)
                         f.close
                         break
 
 
-                filename = '%s.eml' % (datetime.now().strftime('%Y%m%d%H%M%S'))
-                print(f"Sending Email to {inbox}")
-                f = open(f"{inbox}/{filename}", 'wb')
-                f.write(data)
-                f.close
+
 
 
     except Exception as e:
